@@ -15,14 +15,13 @@ struct node{
 	
 };
 
-node arr[10];
+node arr[15];
 
 string Remarks[] = {"Landing","Delayed","Boarding","On Schedule","Departed"};
 
 
 string remarks() { //Generate Remarks (Sequencial)
 
-//	string Remarks[] = {"Landing","Delayed","Boarding","On Schedule","Departed"};
 	string remarks;
 	int random;
 	
@@ -84,51 +83,54 @@ string time() { //Generate Random Time
 
 
 void checkData(){
-	for (int i=0;i<10;){
+	for (int i=0; i<(sizeof(arr)/sizeof(*arr)); i++){
 		if(arr[i].remarks=="Departed"){
 			node obj;
+		
 			obj.country=country();
 			obj.flight=flight();
 			obj.time=time();
 			obj.remarks=remarks();
 
-			
-			arr[i].country=obj.country;
-			arr[i].flight=obj.flight;
-			arr[i].remarks=obj.remarks;
-			arr[i].time=obj.time;
+			arr[i] = obj;
 		}
 	}
 }
 
+void appendData() {
+	for (int i=0; i<(sizeof(arr)/sizeof(*arr)); i++){
+		if(arr[i].remarks=="Departed"){
+			node obj;
+		
+			obj.country=country();
+			obj.flight=flight();
+			obj.time=time();
+			obj.remarks=remarks();
 
-
-
-
-
-	
+			arr[i] = obj;
+		}
+	}
+}
 	
 void declaredata(){
-	for (int i=0;i<10;i++){
+	for (int i=0; i<(sizeof(arr)/sizeof(*arr)); i++){
 	node obj;
+	
 	obj.flight=flight();
 	obj.time=time();
 	obj.country=country();
 	obj.remarks=remarks();
 	
-	arr[i].flight=obj.flight;
-	arr[i].country=obj.country;
-	arr[i].remarks=obj.remarks;
-	arr[i].time=obj.time;
+	arr[i] = obj;
 	}
 }
 
 void printdata(){
-	for (int i=0;i<10;i++){
+	for (int i=0;i<(sizeof(arr)/sizeof(*arr));i++){
 			cout <<"||"<< setw(9)<< arr[i].flight << setw(9)<<"||"<< setw(9) << arr[i].country << setw(9)<<"||"<< setw(9) << arr[i].time << setw(9) <<"||"<< setw(15)<< arr[i].remarks<<setw(9)<<"||";
 
 	}
-	sleep(3);
+	sleep(2);
 	system("cls");
 	sleep(0.8);
 }
@@ -136,11 +138,12 @@ void printdata(){
 
 int main(){
 	
+	
 	declaredata();
 	
 	while(true){
 		printdata();
-		//checkData();
+		checkData();
 		}
 		
 

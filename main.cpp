@@ -101,7 +101,6 @@ int main() {
 		createnode();
 		sleep(1);
 		printnode();
-		cout << "\33[2K";
 		i++;
 	}
 	
