@@ -4,7 +4,9 @@
 #include <iomanip>
 #include <unistd.h>
 #include <stack>
-#include <stdlib.h>    
+#include <stdlib.h>
+#include <windows.h>
+#include <conio.h>
 
 using namespace std;
 
@@ -82,7 +84,12 @@ string time() { //Generate Random Time
 	int min = aTime->tm_min;
 	clock += to_string(hour);
 	clock += ":";
-	clock += to_string(min);
+	if (min%10==min){
+		clock += to_string(0);
+		clock += to_string(min);
+	}else {
+		clock += to_string(min);
+	}
 	
 	return clock;
 }
@@ -120,8 +127,26 @@ void announcement(stack<int> dep, stack<int> lan, node arr[]){
 		lan.pop();
 		cout<<arr[x].time<<setw(9)<<" flight No."<<arr[x].flight<<" has landed"<<endl;
 	}
+	cout<<endl<<"notice"<<endl;
+	cout<<"press spacebar to search for your flight number.";
 }
 
+int checknum(string input){
+	
+	for (int i=0;i<10;i++){
+		if(arr[i].flight==input){
+			cout<<arr[i].flight<<setw(9);
+			cout<<arr[i].country<<setw(9);
+			cout<<arr[i].time<<setw(15);
+			cout<<arr[i].remarks;
+			cout<<endl;		
+			return 0;
+		}
+	}
+	
+	cout<< "Flight Number " << input <<" Not Found"<<endl;
+	return 1;
+}
 
 void checkData(){
 	int random;
@@ -185,23 +210,32 @@ void declaredata(){
 }
 
 void printdata(){
+	cout<<"=============================================================================="<<endl;
+	cout<<"Flight No."<<setw(6)<<"||"<<setw(10);
+		cout<<"Country"<<setw(10)<<"||"<<setw(10);
+		cout<<"Time"<<setw(10)<<"||"<<setw(12);
+		cout<<"Remarks"<<setw(10)<<"||";
+		cout<<endl;	
+	cout<<"=============================================================================="<<endl;
+
 	for (int i=0;i<10;i++){
-		cout<<arr[i].flight<<setw(9);
-		cout<<arr[i].country<<setw(9);
-		cout<<arr[i].time<<setw(15 );
-		cout<<arr[i].remarks;
+		cout<<arr[i].flight<<setw(10)<<"||"<<setw(10);
+		cout<<arr[i].country<<setw(10)<<"||"<<setw(10);
+		cout<<arr[i].time<<setw(10)<<"||"<<setw(12);
+		cout<<arr[i].remarks<<setw(10)<<"||";
 		cout<<endl;	
 	}
-//	sleep(3);
-//	system("cls");
-//	sleep(0.8);
-}
+	cout<<"=============================================================================="<<endl;
 
+}
 
 int main(){
 	
 	declaredata();
-	
+	bool pause = false;	
+	string Numbers;
+
+		
 	while(true){
 		printdata();
 		checkData();
@@ -216,11 +250,37 @@ int main(){
 		
 		cout<<endl;
 		sleep(5);
+
+		
+		if (kbhit()){
+			switch (_getch()){
+				case 32:
+					sleep(2);
+					pause = true;
+			}	
+		}
+		
+		while(pause){
+			cout<<"Flight Number : ";
+			cin>>Numbers;
+			checknum(Numbers);
+				cout<<"press Spacebar to exit search"<<endl;
+			sleep(3);
+		
+			if (kbhit()){
+				switch (_getch()){
+					case 32:
+						sleep(2);
+						pause = false;
+						
+				}	
+			}
+		}
+		
+
 		system("cls");
 		sleep(0.8);
 		newData(dep);
-		clearStack(dep,land);
+		clearStack(dep,land);	
 	}
-		
-
 }
