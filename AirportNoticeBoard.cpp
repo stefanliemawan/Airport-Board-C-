@@ -4,8 +4,17 @@
 #include <iomanip>
 #include <unistd.h>
 #include <vector>
+#include <windows.h>
+#include <conio.h>
 
 using namespace std;
+
+void gotoxy(short x, short y) { //copas stackoverflow wkwkwk
+    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+    COORD position = { x, y };
+
+    SetConsoleCursorPosition(hStdout, position);
+}
 
 struct node{
 	string flight;
@@ -17,7 +26,9 @@ struct node{
 
 node arr[24];
 
-string Remarks[] = {"Landing","Delayed","Boarding","On Schedule","Departed"};
+string Remarks[] = {
+	"On Schedule","Landing","Refuel","Boarding","Final Check","Delayed","Departed"
+};
 
 
 string remarks(int index) { //Generate Remarks (Sequencial)
@@ -42,6 +53,8 @@ string flight() { //Generate Random Flight Number
 		letter = 'A' + random;
 		flightcode += letter;
 	}
+	
+	flightcode += " ";
 	
 	for (int i=0; i<4; i++) {
 		random = rand() % 10;
@@ -76,7 +89,7 @@ string time() { //Generate Random Time
 	time_t theTime = time(NULL);
 	struct tm *aTime = localtime(&theTime);
 	
-	int hour = aTime->tm_min;
+	int hour = aTime->tm_hour;
 	int min = aTime->tm_sec;
 	clock += to_string(hour);
 	clock += ":";
@@ -115,23 +128,22 @@ void checkData(){
 }
 	
 void declaredata(){
-	int random;
 	
 	for (int i=0; i<(sizeof(arr)/sizeof(*arr)); i++){
-		random = rand() % (sizeof(Remarks)/sizeof(*Remarks));
 		
 		node obj;
 		
 		obj.flight=flight();
 		obj.time=time();
 		obj.country=country();
-		obj.remarks=remarks(random);
+		obj.remarks=remarks(0);
 		
 		arr[i] = obj;
 	}
 }
 
 void printdata(){
+	
 	for (int i=0;i<(sizeof(arr)/sizeof(*arr));i++){
 			cout 
 			<<"||"<< setw(9)<< arr[i].flight << setw(9)
@@ -140,16 +152,19 @@ void printdata(){
 			<<"||"<< setw(15)<< arr[i].remarks<<setw(9)<<"||" << endl;
 
 	}
-	sleep(2);
-	system("cls");
+	sleep(1);
+	gotoxy(0,0);
 }
 
 
-void changerem() {
+void update() {
 	int random;
 	int x;
+	int r;
 	
-	for (int i=0; i<10; i++) {
+	r = rand() % 6 + 1;
+	
+	for (int i=0; i<r; i++) { // Calculate how many Remarks are updated (randomly)
 		random = rand() % (sizeof(arr)/sizeof(*arr));
 	
 		if (arr[random].remarks != "") {
@@ -157,6 +172,8 @@ void changerem() {
 			else if (arr[random].remarks == Remarks[1] ) x = 2;
 			else if (arr[random].remarks == Remarks[2] ) x = 3;
 			else if (arr[random].remarks == Remarks[3] ) x = 4;
+			else if (arr[random].remarks == Remarks[4] ) x = 5;
+			else if (arr[random].remarks == Remarks[5] ) x = 6;
 		
 			arr[random].remarks = remarks(x);
 		}	
@@ -165,18 +182,18 @@ void changerem() {
 } 
 
 int main(){
-	
 	srand(time(NULL));
 	
 	declaredata();
 	
 	while(true){
-		printdata();
-		checkData();
-		changerem();
+		printdata(); //cout << "print ";
+		checkData(); //cout << "check ";
+		update(); //cout << "update "<< endl;
 	}
 		
-
+	cin.ignore();
+	return 0;
 }
 
 
