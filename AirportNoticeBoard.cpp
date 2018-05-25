@@ -6,8 +6,18 @@
 #include <vector>
 #include <windows.h>
 #include <conio.h>
+#include <queue>
 
 using namespace std;
+
+void clearQueue(queue<int>& dep, queue<int>& land){
+	while(!land.empty()){
+		land.pop();
+	}
+	while(!dep.empty()){
+		dep.pop();
+	}
+}
 
 void gotoxy(short x, short y) { //copas stackoverflow wkwkwk
     HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -24,10 +34,14 @@ struct node{
 	
 };
 
-node arr[24];
+node arr[15];
+queue<int> dep;
+queue<int> land;
+queue<int> empty;
+
 
 string Remarks[] = {
-	"On Schedule","Landing","Refuel","Boarding","Final Check","Delayed","Departed"
+	"Landing","Refuel","On Schedule","Boarding","Final Check","Departed","Delayed"
 };
 
 
@@ -84,7 +98,8 @@ string country() { //Generate Random Country
 
 string time() { //Generate Random Time
 	
-	string clock;
+
+string clock;
 	
 	time_t theTime = time(NULL);
 	struct tm *aTime = localtime(&theTime);
@@ -93,40 +108,64 @@ string time() { //Generate Random Time
 	int min = aTime->tm_sec;
 	clock += to_string(hour);
 	clock += ":";
-	clock += to_string(min);
+	if (min%10==min){
+		clock += to_string(0);
+		clock += to_string(min);
+	}else {
+		clock += to_string(min);
+	}
 	
 	return clock;
 }
 
+void announcement(queue<int> dep, queue<int> lan, node arr[]){
+	
+	int x;
+	while(!dep.empty()){
+		x = dep.front();
+		dep.pop();
+		cout<<arr[x].time<<setw(9)<<" flight No."<<arr[x].flight<<" has departed"<<endl;
+	}
+	while(!lan.empty()){
+		x=lan.front();
+		lan.pop();
+		cout<<arr[x].time<<setw(9)<<" flight No."<<arr[x].flight<<" has landed"<<endl;
+	}
+	
+}
 
-void checkData(){
-	
-	
-	for (int i=0; i<(sizeof(arr)/sizeof(*arr)); i++){
-		if(arr[i].remarks == "Departed"){
-			node obj;
-			
-			obj.country = "";
-			obj.flight = "";
-			obj.time = "";
-			obj.remarks = "";
-			
-			arr[i] = obj;
-		}
-		else if(arr[i].remarks == "") {
-			node obj;
-			
-			obj.country = country();
-			obj.flight = flight();
-			obj.time = time();
-			obj.remarks = remarks(0);
-			
-			arr[i] = obj;
-		}
+void newData(queue<int> dep){
+	int y;
+	while(!dep.empty()){
+		y=dep.front();
+		dep.pop();
+		
+		node obj;
+		obj.country=country();
+		obj.flight=flight();
+		obj.time=time();
+		obj.remarks=remarks(0);
+
+		arr[y].country=obj.country;
+		arr[y].flight=obj.flight;
+		arr[y].remarks=obj.remarks;
+		arr[y].time=obj.time;
 		
 	}
 }
+
+void checkData(){
 	
+	for (int i=0; i</*(sizeof(arr)/sizeof(*arr))*/15; i++){
+		if(arr[i].remarks == "Departed"){
+			dep.push(i);
+			
+		}else if(arr[i].remarks=="Landing"){
+			land.push(i);
+		}		
+	}
+}
+
 void declaredata(){
 	
 	for (int i=0; i<(sizeof(arr)/sizeof(*arr)); i++){
@@ -152,10 +191,7 @@ void printdata(){
 			<<"||"<< setw(15)<< arr[i].remarks<<setw(9)<<"||" << endl;
 
 	}
-	sleep(1);
-	gotoxy(0,0);
 }
-
 
 void update() {
 	int random;
@@ -174,12 +210,36 @@ void update() {
 			else if (arr[random].remarks == Remarks[3] ) x = 4;
 			else if (arr[random].remarks == Remarks[4] ) x = 5;
 			else if (arr[random].remarks == Remarks[5] ) x = 6;
-		
 			arr[random].remarks = remarks(x);
-		}	
+		}
 	}
-
+	
+	for (int k = 0; k<empty.size();k++){
+		int x = empty.front();
+		
+		arr[x].country=country();
+		arr[x].flight=flight();
+		arr[x].time=time();
+		arr[x].remarks=remarks(0);
+		
+		empty.pop();
+	}
+	
+	for (int j = 0; j<dep.size();j++){
+		int x = dep.front();
+		
+		arr[x].remarks = "";
+		arr[x].flight = "";
+		arr[x].time = "";
+		arr[x].country = "";
+		
+		dep.pop();
+		empty.push(x);
+	}
+	
+	clearQueue(dep, land);
 } 
+
 
 int main(){
 	srand(time(NULL));
@@ -187,14 +247,18 @@ int main(){
 	declaredata();
 	
 	while(true){
-		printdata(); //cout << "print ";
-		checkData(); //cout << "check ";
+		printdata(); //cout << //"print ";
+		checkData(); //cout << //"check ";
+		sleep(1);
 		update(); //cout << "update "<< endl;
+		
+		gotoxy(0,0);
+	//	system("cls");
+
+		
 	}
 		
 	cin.ignore();
 	return 0;
 }
-
-
 
