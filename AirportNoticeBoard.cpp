@@ -10,7 +10,9 @@
 
 using namespace std;
 
-//test push
+//menu added
+//delay announcement added
+//announcement added
 
 // For printing without cls
 void gotoxy(short x, short y) { //copas stackoverflow wkwkwk
@@ -34,6 +36,9 @@ queue<int> dep;
 queue<int> land;
 queue<int> empty;
 queue<int> ontime;
+queue<int> delay;
+int menu = 0;
+bool run = true;
 
 string Remarks[] = {
 	"Landing","Refuel","On Schedule","Delayed","Boarding","Final Check","Departed"
@@ -148,8 +153,10 @@ string currentTime(){
 }
 
 // Announce the depart plane
-void announcement(queue<int> dep, queue<int> lan, node arr[]){
-
+void announcement(queue<int> dep, queue<int> lan,queue<int> delay, node arr[]){
+	cout<<"============"<<endl;
+	cout<<"ANNOUNCEMENT"<<endl;
+	cout<<"============"<<endl;
 	int x;
 	while(!dep.empty()){
 		x = dep.front();
@@ -160,6 +167,11 @@ void announcement(queue<int> dep, queue<int> lan, node arr[]){
 		x=lan.front();
 		lan.pop();
 		cout<<arr[x].time<<setw(9)<<" flight No."<<arr[x].flight<<" has landed"<<endl;
+	}
+	while(!delay.empty()){
+		x = delay.front();
+		delay.pop();
+		cout<<arr[x].time<<setw(9)<<" flight No."<<arr[x].flight<<" has been delayed"<<endl;
 	}
 
 }
@@ -194,6 +206,9 @@ void checkData(){
 
 		}else if(arr[i].remarks=="Landing"){
 			land.push(i);
+			
+		}else if(arr[i].remarks == "Delayed"){
+			delay.push(i);
 		}
 	}
 
@@ -204,6 +219,7 @@ void checkData(){
 			continue;
 		}
 	}
+	
 }
 
 // Clear up the dep, land and ontime queues
@@ -216,6 +232,8 @@ void clearQueue(){
 	}
 	while(!ontime.empty()){
 		ontime.pop();
+	}while(!delay.empty()){
+		delay.pop();
 	}
 }
 
@@ -237,6 +255,15 @@ void declaredata(){
 
 // Print all data in form of Board
 void printdata(){
+	
+	cout<<"================================================================================"<<endl;
+	cout<<"||"<<setw(12)<<"Flight No."<<setw(6)<<"||"<<setw(10);
+		cout<<"Country"<<setw(8)<<"||"<<setw(8);
+		cout<<"Time"<<setw(10)<<"||"<<setw(15);
+		cout<<"Remarks"<<setw(9)<<"||";
+		cout<<endl;	
+	cout<<"================================================================================"<<endl;
+
 
 	for (int i=0;i<(sizeof(arr)/sizeof(*arr));i++){
 			cout
@@ -246,6 +273,10 @@ void printdata(){
 			<<"||"<< setw(15)<< arr[i].remarks<<setw(9)<<"||" << endl;
 
 	}
+	cout<<"================================================================================"<<endl;
+
+
+
 }
 
 //Get the hour of the obj
@@ -389,22 +420,89 @@ void update() {
 	}
 
 	// Clear all queue to avoid stacking the indexes multiple time
-	clearQueue();
+//	clearQueue();
 }
 
+int checknum(string input){
+	
+	for (int i=0;i<(sizeof(arr)/sizeof(*arr));i++){
+		if(arr[i].flight==input){
+			cout<<arr[i].flight<<setw(9);
+			cout<<arr[i].country<<setw(9);
+			cout<<arr[i].time<<setw(15);
+			cout<<arr[i].remarks;
+			cout<<endl;		
+			return 0;
+		}
+	}
+	
+	cout<< "Flight Number " << input <<" Not Found"<<endl;
+	return 1;
+}
+
+void input(){
+	
+	if(_kbhit()){
+		switch(_getch()){
+			case '1' : menu = 0;break;
+			case '2' : menu = 1;break;
+			case '3' : menu = 2;break;
+			case 'x' : run = false;break;
+			
+		}
+	}
+}
+
+void menu1(){
+		clearQueue();
+		printdata(); //cout << //"print ";
+		checkData(); //cout << //"check ";
+	
+		cout<<"press 2 to search for flight."<<endl;
+		cout<<"press 3 to see the announcement."<<endl;
+		sleep(3);
+		update(); //cout << "update "<< endl;
+		
+
+		gotoxy(0,0);
+
+}
+
+void menu2(){
+	string flightnum;
+
+		system("cls");
+		cout<<"Flight Number : ";
+		getline (std::cin,flightnum);
+		checknum(flightnum);
+		
+		cout<<"press 1 to exit search"<<endl;
+		sleep(3);
+		system("cls");
+
+}
+
+void menu3(){
+	system("cls");
+	announcement(dep, land, delay, arr);
+	sleep(3);
+	system("cls");
+}
 int main(){
 	srand(time(NULL));
 
 	declaredata();
-
-	while(true){
-		printdata(); //cout << //"print ";
-		checkData(); //cout << //"check ";
-		sleep(3);
-		update(); //cout << "update "<< endl;
-
-		gotoxy(0,0);
-	//	system("cls");
+	
+	while (run){
+		input();
+		if(menu == 0){
+			menu1();
+		}else if (menu == 1){
+			menu2();
+		}else if(menu == 2){
+			menu3();
+		}
+		input();
 	}
 
 	cin.ignore();
