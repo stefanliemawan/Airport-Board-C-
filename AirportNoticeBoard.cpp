@@ -10,15 +10,7 @@
 
 using namespace std;
 
-void clearQueue(queue<int>& dep, queue<int>& land){
-	while(!land.empty()){
-		land.pop();
-	}
-	while(!dep.empty()){
-		dep.pop();
-	}
-}
-
+// For printing without cls
 void gotoxy(short x, short y) { //copas stackoverflow wkwkwk
     HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
     COORD position = { x, y };
@@ -26,6 +18,7 @@ void gotoxy(short x, short y) { //copas stackoverflow wkwkwk
     SetConsoleCursorPosition(hStdout, position);
 }
 
+// Data structure of obj
 struct node{
 	string flight;
 	string remarks;
@@ -33,19 +26,19 @@ struct node{
 	string time;
 };
 
+// Datas
 node arr[15];
 queue<int> dep;
 queue<int> land;
 queue<int> empty;
-int menu= 0;
-bool run = true;
-
+queue<int> ontime;
 
 string Remarks[] = {
 	"Landing","Refuel","On Schedule","Delayed","Boarding","Final Check","Departed"
 };
 
-string remarks(int index) { //Generate Remarks (Sequencial)
+// Produce random remark
+string remarks(int index) {
 
 	string remarks;
 
@@ -54,7 +47,8 @@ string remarks(int index) { //Generate Remarks (Sequencial)
 	return remarks;
 }
 
-string flight() { //Generate Random Flight Number
+// Produce random flight number
+string flight() {
 
 	char letter;
 	int random;
@@ -79,7 +73,8 @@ string flight() { //Generate Random Flight Number
 	return flightcode;
 }
 
-string country() { //Generate Random Country
+// Produce random destination/country
+string country() {
 
 	string arr[] = {
 	"London","Alaska","Boston","Madrid","Queens",
@@ -96,15 +91,24 @@ string country() { //Generate Random Country
 	return country;
 }
 
-string time() { //Generate Random Time
+// Produce current time + random int (between 0 & 3)
+string time() {
 
 	string clock;
 
 	time_t theTime = time(NULL);
 	struct tm *aTime = localtime(&theTime);
 
+	int min;
 	int hour = aTime->tm_hour;
-	int min = (aTime->tm_min)+(rand()%4);
+
+	// Check second to avoid getting current minute after current minute increase due to sleep
+	if (aTime->tm_sec >= 50){
+		min = (aTime->tm_min)+(rand()%3)+1;
+	}else {
+		min = (aTime->tm_min)+(rand()%4);
+	}
+
 	clock += to_string(hour);
 	clock += ":";
 
@@ -118,6 +122,30 @@ string time() { //Generate Random Time
 	return clock;
 }
 
+// Return the current time for checkData()
+string currentTime(){
+
+	string clock;
+
+	time_t theTime = time(NULL);
+	struct tm *aTime = localtime(&theTime);
+
+	int hour = aTime->tm_hour;
+	int min = aTime->tm_min;
+	clock += to_string(hour);
+	clock += ":";
+
+	if (min%10==min){
+		clock += to_string(0);
+		clock += to_string(min);
+	}else {
+		clock += to_string(min);
+	}
+
+	return clock;
+}
+
+// Announce the depart plane
 void announcement(queue<int> dep, queue<int> lan, node arr[]){
 
 	int x;
@@ -134,6 +162,7 @@ void announcement(queue<int> dep, queue<int> lan, node arr[]){
 
 }
 
+// Ini ngapain cuk
 void newData(queue<int> dep){
 	int y;
 	while(!dep.empty()){
@@ -154,12 +183,10 @@ void newData(queue<int> dep){
 	}
 }
 
-
-
-
+// Fill up the dep, land and ontime queue
 void checkData(){
 
-	for (int i=0; i</*(sizeof(arr)/sizeof(*arr))*/15; i++){
+	for (int i=0; i< (sizeof(arr)/sizeof(*arr)); i++){
 		if(arr[i].remarks == "Departed"){
 			dep.push(i);
 
@@ -167,8 +194,30 @@ void checkData(){
 			land.push(i);
 		}
 	}
+
+	for (int i = 0; i < (sizeof(arr)/sizeof(*arr)); i++){
+		if (arr[i].time == currentTime()){
+			ontime.push(i);
+		}else {
+			continue;
+		}
+	}
 }
 
+// Clear up the dep, land and ontime queues
+void clearQueue(){
+	while(!land.empty()){
+		land.pop();
+	}
+	while(!dep.empty()){
+		dep.pop();
+	}
+	while(!ontime.empty()){
+		ontime.pop();
+	}
+}
+
+// Fill array with new objs
 void declaredata(){
 
 	for (int i=0; i<(sizeof(arr)/sizeof(*arr)); i++){
@@ -184,15 +233,8 @@ void declaredata(){
 	}
 }
 
+// Print all data in form of Board
 void printdata(){
-	cout<<"================================================================================"<<endl;
-	cout<<"||"<<setw(12)<<"Flight No."<<setw(6)<<"||"<<setw(10);
-		cout<<"Country"<<setw(8)<<"||"<<setw(8);
-		cout<<"Time"<<setw(10)<<"||"<<setw(15);
-		cout<<"Remarks"<<setw(10)<<"||";
-		cout<<endl;	
-	cout<<"================================================================================"<<endl;
-
 
 	for (int i=0;i<(sizeof(arr)/sizeof(*arr));i++){
 			cout
@@ -202,11 +244,10 @@ void printdata(){
 			<<"||"<< setw(15)<< arr[i].remarks<<setw(9)<<"||" << endl;
 
 	}
-		cout<<"================================================================================"<<endl;
-
 }
 
-string getHour(string time){ //Get the hour of the obj
+//Get the hour of the obj
+string getHour(string time){
 	string seperator = ":";
 	int pos = time.find(seperator);
   string hour = time.substr(0, pos);
@@ -214,7 +255,8 @@ string getHour(string time){ //Get the hour of the obj
   return hour;
 }
 
-string getMin(string time){ //Get the min of the obj
+//Get the min of the obj
+string getMin(string time){
 	string seperator = ":";
 	int pos = time.find(seperator);
   string token = time.substr(0, pos);
@@ -223,28 +265,66 @@ string getMin(string time){ //Get the min of the obj
   return min;
 }
 
+// Update the board >> logics applied here
 void update() {
+
 	int random;
-	int random2;
 	int x;
 	int r;
 
 	r = rand() % 6 + 1;
 
-	for (int i=0; i<r; i++) { // Calculate how many Remarks are updated (randomly)
+	// Calculate how many Remarks are updated (randomly)
+	for (int i=0; i<r; i++) {
 		random = rand() % (sizeof(arr)/sizeof(*arr));
 
 		if (arr[random].remarks != "") {
 			if (arr[random].remarks == Remarks[0] ) x = 1;
 			else if (arr[random].remarks == Remarks[1] ) x = 2;
-			else if (arr[random].remarks == Remarks[2] ){
-				random2 = rand();
-				if (random2%2 == 0){
+			else if (arr[random].remarks == Remarks[3] ) x = 3;
+			else {
+				// Make remark the same or unchange
+				for (int a = 0; a < 7; a++){
+					if (arr[random].remarks == Remarks[a] ){
+						x = a;
+					}else {
+						continue;
+					}
+				}
+			}
+			arr[random].remarks = remarks(x);
+		}
+	}
+
+	// Avoid error if notime queue is empty
+	if (ontime.size() > 0){
+		r = rand() % ontime.size()+1;
+
+		// Increase speed of departing the on time plane to avoid being passed by current time
+		if (ontime.size() >= 2){
+			r+=1;
+		}
+
+		for (int a = 0; a < r; a++){
+			int index = ontime.front();
+
+			if (arr[index].remarks == Remarks[0] ){
+				x = 1;
+				ontime.pop();
+				ontime.push(index);
+			}
+			else if (arr[index].remarks == Remarks[1] ){
+				x = 2;
+				ontime.pop();
+				ontime.push(index);
+			}
+			else if (arr[index].remarks == Remarks[2] ){
+				if (rand()%4 == 0){
 					x = 3;
 
-					// Add 1 min due to delay;
-					string newtime = getHour(arr[random].time) + ":";
-					string min = getMin(arr[random].time);
+					// Add 1 min to current obj.time due to delay;
+					string newtime = getHour(arr[index].time) + ":";
+					string min = getMin(arr[index].time);
 					int newmin = stoi(min)+1;
 
 					if (newmin%10==newmin){
@@ -254,18 +334,34 @@ void update() {
 						newtime += to_string(newmin);
 					}
 
-					arr[random].time = newtime;
-				}else {
+					arr[index].time = newtime;
+					ontime.pop();
+				}
+				else{
 					x = 4;
+					ontime.pop();
+					ontime.push(index);
 				}
 			}
-			else if (arr[random].remarks == Remarks[3] ) x = 4;
-			else if (arr[random].remarks == Remarks[4] ) x = 5;
-			else if (arr[random].remarks == Remarks[5] ) x = 6;
-			arr[random].remarks = remarks(x);
+			else if (arr[index].remarks == Remarks[3] ){
+				x = 4;
+				ontime.pop();
+	 			ontime.push(index);
+			}
+			else if (arr[index].remarks == Remarks[4] ){
+				x = 5;
+				ontime.pop();
+				ontime.push(index);
+			}
+			else if (arr[index].remarks == Remarks[5] ){
+				x = 6;
+				ontime.pop();
+			}
+			arr[index].remarks = remarks(x);
 		}
 	}
 
+	// Fill up obj that has "" / empty data
 	for (int k = 0; k<empty.size();k++){
 		int x = empty.front();
 
@@ -277,6 +373,7 @@ void update() {
 		empty.pop();
 	}
 
+	// Empty data of obj with "Departed" remark
 	for (int j = 0; j<dep.size();j++){
 		int x = dep.front();
 
@@ -289,85 +386,24 @@ void update() {
 		empty.push(x);
 	}
 
-	clearQueue(dep, land);
-}
-
-void input(){
-	
-	if(_kbhit()){
-		switch(_getch()){
-			case '1' : menu = 0;break;
-			case '2' : menu = 1;break;
-			case 'x' : run = false;break;
-			
-		}
-	}
-}
-
-int checknum(string input){
-	
-	for (int i=0;i<(sizeof(arr)/sizeof(*arr));i++){
-		if(arr[i].flight==input){
-			cout<<arr[i].flight<<setw(9);
-			cout<<arr[i].country<<setw(9);
-			cout<<arr[i].time<<setw(15);
-			cout<<arr[i].remarks;
-			cout<<endl;		
-			return 0;
-		}
-	}
-	
-	cout<< "Flight Number " << input <<" Not Found"<<endl;
-	return 1;
-}
-
-void menu1(){
-
-	
-		printdata(); //cout << //"print ";
-		checkData(); //cout << //"check ";
-		announcement(dep, land, arr);
-		sleep(5);
-		update(); //cout << "update "<< endl;
-		cout<<"press 2 to search for flight."<<endl;
-
-		gotoxy(0,0);
-
-
-}
-
-void menu2(){
-	string flightnum;
-	
-			system("cls");
-			cout<<"Flight Number : ";
-			getline (std::cin,flightnum);
-			checknum(flightnum);
-			
-			cout<<"press 1 to exit search"<<endl;
-			sleep(3);
-			system("cls");
-	
-
+	// Clear all queue to avoid stacking the indexes multiple time
+	clearQueue();
 }
 
 int main(){
 	srand(time(NULL));
-	string Numbers;
-	
-	
-	declaredata();
-	
-	while (run){
-		input();
-		if(menu == 0){
-			menu1();
-		}else if (menu == 1){
-			menu2();
-		}
-		input();
-	}	
 
+	declaredata();
+
+	while(true){
+		printdata(); //cout << //"print ";
+		checkData(); //cout << //"check ";
+		sleep(3);
+		update(); //cout << "update "<< endl;
+
+		gotoxy(0,0);
+	//	system("cls");
+	}
 
 	cin.ignore();
 	return 0;
