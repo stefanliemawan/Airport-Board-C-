@@ -37,6 +37,9 @@ node arr[15];
 queue<int> dep;
 queue<int> land;
 queue<int> empty;
+int menu= 0;
+bool run = true;
+
 
 string Remarks[] = {
 	"Landing","Refuel","On Schedule","Delayed","Boarding","Final Check","Departed"
@@ -151,6 +154,9 @@ void newData(queue<int> dep){
 	}
 }
 
+
+
+
 void checkData(){
 
 	for (int i=0; i</*(sizeof(arr)/sizeof(*arr))*/15; i++){
@@ -179,6 +185,14 @@ void declaredata(){
 }
 
 void printdata(){
+	cout<<"================================================================================"<<endl;
+	cout<<"||"<<setw(12)<<"Flight No."<<setw(6)<<"||"<<setw(10);
+		cout<<"Country"<<setw(8)<<"||"<<setw(8);
+		cout<<"Time"<<setw(10)<<"||"<<setw(15);
+		cout<<"Remarks"<<setw(10)<<"||";
+		cout<<endl;	
+	cout<<"================================================================================"<<endl;
+
 
 	for (int i=0;i<(sizeof(arr)/sizeof(*arr));i++){
 			cout
@@ -188,6 +202,8 @@ void printdata(){
 			<<"||"<< setw(15)<< arr[i].remarks<<setw(9)<<"||" << endl;
 
 	}
+		cout<<"================================================================================"<<endl;
+
 }
 
 string getHour(string time){ //Get the hour of the obj
@@ -276,20 +292,82 @@ void update() {
 	clearQueue(dep, land);
 }
 
-int main(){
-	srand(time(NULL));
+void input(){
+	
+	if(_kbhit()){
+		switch(_getch()){
+			case '1' : menu = 0;break;
+			case '2' : menu = 1;break;
+			case 'x' : run = false;break;
+			
+		}
+	}
+}
 
-	declaredata();
+int checknum(string input){
+	
+	for (int i=0;i<(sizeof(arr)/sizeof(*arr));i++){
+		if(arr[i].flight==input){
+			cout<<arr[i].flight<<setw(9);
+			cout<<arr[i].country<<setw(9);
+			cout<<arr[i].time<<setw(15);
+			cout<<arr[i].remarks;
+			cout<<endl;		
+			return 0;
+		}
+	}
+	
+	cout<< "Flight Number " << input <<" Not Found"<<endl;
+	return 1;
+}
 
-	while(true){
+void menu1(){
+
+	
 		printdata(); //cout << //"print ";
 		checkData(); //cout << //"check ";
-		sleep(1);
+		announcement(dep, land, arr);
+		sleep(5);
 		update(); //cout << "update "<< endl;
+		cout<<"press 2 to search for flight."<<endl;
 
 		gotoxy(0,0);
-	//	system("cls");
-	}
+
+
+}
+
+void menu2(){
+	string flightnum;
+	
+			system("cls");
+			cout<<"Flight Number : ";
+			getline (std::cin,flightnum);
+			checknum(flightnum);
+			
+			cout<<"press 1 to exit search"<<endl;
+			sleep(3);
+			system("cls");
+	
+
+}
+
+int main(){
+	srand(time(NULL));
+	string Numbers;
+	
+	
+	declaredata();
+	
+	while (run){
+		input();
+		if(menu == 0){
+			menu1();
+		}else if (menu == 1){
+			menu2();
+		}
+		input();
+	}	
+
 
 	cin.ignore();
 	return 0;
