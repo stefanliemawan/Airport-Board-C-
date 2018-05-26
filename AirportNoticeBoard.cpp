@@ -10,6 +10,8 @@
 
 using namespace std;
 
+
+// vin ini gw push jam 19:27 ini gw lagi ganti ganti codenya ya  
 void clearQueue(queue<int>& dep, queue<int>& land){
 	while(!land.empty()){
 		land.pop();
@@ -193,17 +195,26 @@ void printdata(){
 	}
 }
 
+//	"Landing 0","Refuel 1","On Schedule 2","Boarding 3","Final Check 4","Departed 5","Delayed 6"
+
+
 void update() {
 	int random;
 	int x;
 	int r;
+	int Rrand;
 	
 	r = rand() % 6 + 1;
 	
 	for (int i=0; i<r; i++) { // Calculate how many Remarks are updated (randomly)
 		random = rand() % (sizeof(arr)/sizeof(*arr));
+		cout<<"random"<<random<<endl;
+		Rrand = rand() % 100;
+		
+		cout<<"Rrand"<<Rrand<<endl;
+		
 	
-		if (arr[random].remarks != "") {
+		if (arr[random].remarks != "") { 
 			if (arr[random].remarks == Remarks[0] ) x = 1;
 			else if (arr[random].remarks == Remarks[1] ) x = 2;
 			else if (arr[random].remarks == Remarks[2] ) x = 3;
