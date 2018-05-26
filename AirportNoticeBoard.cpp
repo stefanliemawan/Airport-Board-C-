@@ -10,8 +10,6 @@
 
 using namespace std;
 
-
-// vin ini gw push jam 19:27 ini gw lagi ganti ganti codenya ya  
 void clearQueue(queue<int>& dep, queue<int>& land){
 	while(!land.empty()){
 		land.pop();
@@ -97,16 +95,16 @@ string country() { //Generate Random Country
 
 string time() { //Generate Random Time
 
-
 	string clock;
 
 	time_t theTime = time(NULL);
 	struct tm *aTime = localtime(&theTime);
 
 	int hour = aTime->tm_hour;
-	int min = aTime->tm_sec;
+	int min = (aTime->tm_min)+(rand()%4);
 	clock += to_string(hour);
 	clock += ":";
+
 	if (min%10==min){
 		clock += to_string(0);
 		clock += to_string(min);
@@ -192,42 +190,55 @@ void printdata(){
 	}
 }
 
-//	"Landing 0","Refuel 1","On Schedule 2","Boarding 3","Final Check 4","Departed 5","Delayed 6"
+string getHour(string time){ //Get the hour of the obj
+	string seperator = ":";
+	int pos = time.find(seperator);
+  string hour = time.substr(0, pos);
 
+  return hour;
+}
+
+string getMin(string time){ //Get the min of the obj
+	string seperator = ":";
+	int pos = time.find(seperator);
+  string token = time.substr(0, pos);
+
+  string min = time.erase(0, pos + seperator.length());
+  return min;
+}
 
 void update() {
 	int random;
 	int random2;
 	int x;
 	int r;
-<<<<<<< HEAD
 
-=======
-	int Rrand;
-	
->>>>>>> 3b9ec23525abddb3e3f58ff78898a35eb3b65f29
 	r = rand() % 6 + 1;
 
 	for (int i=0; i<r; i++) { // Calculate how many Remarks are updated (randomly)
 		random = rand() % (sizeof(arr)/sizeof(*arr));
-<<<<<<< HEAD
 
 		if (arr[random].remarks != "") {
-=======
-		cout<<"random"<<random<<endl;
-		Rrand = rand() % 100;
-		
-		cout<<"Rrand"<<Rrand<<endl;
-		
-	
-		if (arr[random].remarks != "") { 
->>>>>>> 3b9ec23525abddb3e3f58ff78898a35eb3b65f29
 			if (arr[random].remarks == Remarks[0] ) x = 1;
 			else if (arr[random].remarks == Remarks[1] ) x = 2;
 			else if (arr[random].remarks == Remarks[2] ){
 				random2 = rand();
 				if (random2%2 == 0){
 					x = 3;
+
+					// Add 1 min due to delay;
+					string newtime = getHour(arr[random].time) + ":";
+					string min = getMin(arr[random].time);
+					int newmin = stoi(min)+1;
+
+					if (newmin%10==newmin){
+						newtime += "0";
+						newtime += to_string(newmin);
+					}else {
+						newtime += to_string(newmin);
+					}
+
+					arr[random].time = newtime;
 				}else {
 					x = 4;
 				}
