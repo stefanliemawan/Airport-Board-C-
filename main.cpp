@@ -42,16 +42,12 @@ void input() {
 }
 
 void menu1() {
-
-	flight.clearQueue();
-
 	flight.printData(); //cout << //"print ";
-	flight.checkData(); //cout << //"check ";
 
 	cout<<"Press 2 to search for flight..."<<endl;
 	cout<<"Press 3 to see the announcement..."<<endl;
 
-	sleep(1);
+	sleep(2);
 
 	gotoxy(0,0);
 
@@ -75,9 +71,10 @@ void menu2() {
 void menu3() {
 	system("cls");
 	flight.announcement();
+//	flight.clearQueue();
 	sleep(3);
 	system("cls");
-	menu = 0;
+//	menu = 0;
 }
 
 int main() {
@@ -87,6 +84,7 @@ int main() {
 
 	while (run) {
 		input();
+
 		if(menu == 0) {
 			menu1();
 		} else if (menu == 1) {
@@ -94,10 +92,13 @@ int main() {
 		} else if(menu == 2) {
 			menu3();
 		}
-		input();
-		if (menu != 2){
-			flight.update(); //cout << "update "<< endl;
-		}
+
+		// keeping the table updated in the background
+
+		flight.clearQueue();
+		flight.checkData(); //cout << //"check ";
+		flight.update(); //cout << "update "<< endl;
+
 	}
 
 	cin.ignore();

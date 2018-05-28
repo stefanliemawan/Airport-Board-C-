@@ -20,11 +20,14 @@ class Flight {
 		};
 
 		node arr[20];
+		int timer;
 		queue<int> dep;
 		queue<int> land;
-		queue<int> empty;
-		queue<int> ontime;
 		queue<int> delay;
+		queue<int> empty;
+
+		queue<int> start;
+		queue<int> ontime;
 
 		string Remarks[7] = {
 			"Landing","Refuel","On Schedule","Delayed","Boarding","Final Check","Departed"
@@ -35,14 +38,19 @@ class Flight {
 		string country();
 		string time();
 		string currentTime();
+		string startTime();
 		void announcement();
 		void checkData();
 		void clearQueue();
 		void declareData();
 		void printData();
+		string convertTime(int hour, int min);
 		string getHour(string time);
 		string getMin(string time);
+		void fillEmpty();
+		void emptyObj();
 		void update();
+		int getSecond();
 		int checkNum(string input);
 };
 

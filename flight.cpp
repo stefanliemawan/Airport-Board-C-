@@ -67,8 +67,6 @@ string Flight::country() {
 // Produce current time + random int (between 0 & 3)
 string Flight::time() {
 
-	string clock;
-
 	time_t theTime = std::time(NULL);
 	struct tm *aTime = localtime(&theTime);
 
@@ -76,11 +74,27 @@ string Flight::time() {
 	int min;
 
 	// Check second to avoid getting current minute after current minute increase due to sleep
-	if (aTime->tm_sec >= 40){
+	if (aTime->tm_sec >= 50){
 		min = (aTime->tm_min)+(rand()%3+1);
 	}else {
 		min = (aTime->tm_min)+(rand()%4);
 	}
+
+	string clock = convertTime(hour, min);
+
+	return clock;
+}
+
+// Return the current time for checkData()
+string Flight::currentTime(){
+
+	string clock;
+
+	time_t theTime = std::time(NULL);
+	struct tm *aTime = localtime(&theTime);
+
+	int hour = aTime->tm_hour;
+	int min = aTime->tm_min;
 
 	if (min >= 60){
 		hour += 1;
@@ -107,7 +121,7 @@ string Flight::time() {
 }
 
 // Return the current time for checkData()
-string Flight::currentTime(){
+string Flight::startTime(){
 
 	string clock;
 
@@ -115,7 +129,7 @@ string Flight::currentTime(){
 	struct tm *aTime = localtime(&theTime);
 
 	int hour = aTime->tm_hour;
-	int min = aTime->tm_min;
+	int min = (aTime->tm_min)+1;
 
 	if (min >= 60){
 		hour += 1;
@@ -183,6 +197,8 @@ void Flight::checkData(){
 	for (int i = 0; i < (sizeof(arr)/sizeof(*arr)); i++){
 		if (arr[i].time == currentTime()){
 			ontime.push(i);
+		}else if (arr[i].time == startTime()){
+			start.push(i);
 		}else {
 			continue;
 		}
@@ -200,7 +216,11 @@ void Flight::clearQueue(){
 	}
 	while(!ontime.empty()){
 		ontime.pop();
-	}while(!delay.empty()){
+	}
+	while (!start.empty()){
+		start.pop();
+	}
+	while(!delay.empty()){
 		delay.pop();
 	}
 }
@@ -247,6 +267,34 @@ void Flight::printData(){
 
 }
 
+// Convert integer hour and min to a proper time string
+string Flight::convertTime(int hour, int min){
+	string newtime;
+
+	if (min >= 60){
+		hour += 1;
+		min = min%60;
+	}
+
+	if (hour%10==hour){
+		newtime += "0";
+		newtime += to_string(hour);
+	}else {
+		newtime += to_string(hour);
+	}
+
+	newtime += ":";
+
+	if (min%10==min){
+		newtime += "0";
+		newtime += to_string(min);
+	}else {
+		newtime += to_string(min);
+	}
+
+	return newtime;
+}
+
 //Get the hour of the obj
 string Flight::getHour(string time){
 	string seperator = ":";
@@ -264,6 +312,40 @@ string Flight::getMin(string time){
 
   string min = time.erase(0, pos + seperator.length());
   return min;
+}
+
+// Fill up obj that has "" / empty data
+void Flight::fillEmpty(){
+	for (int k = 0; k<empty.size();k++){
+		int x = empty.front();
+
+		arr[x].country=country();
+		arr[x].flight=flight();
+		arr[x].time=time();
+		arr[x].remarks=remarks(0);
+
+		empty.pop();
+		empty.push(x);
+	}
+
+	while(!empty.empty()){
+		empty.pop();
+	}
+}
+
+// Empty data of obj with "Departed" remark
+void Flight::emptyObj(){
+	for (int j = 0; j<dep.size();j++){
+		int x = dep.front();
+
+		arr[x].remarks = "";
+		arr[x].flight = "";
+		arr[x].time = "";
+		arr[x].country = "";
+
+		dep.pop();
+		empty.push(x);
+	}
 }
 
 // Update the board >> logics applied here
@@ -307,81 +389,89 @@ void Flight::update(){
 
 			if (arr[index].remarks == Remarks[0] ){
 				x = 1;
-				ontime.pop();
-				ontime.push(index);
 			}
 			else if (arr[index].remarks == Remarks[1] ){
 				x = 2;
-				ontime.pop();
-				ontime.push(index);
 			}
 			else if (arr[index].remarks == Remarks[2] ){
 				if (rand()%4 == 0){
+					int delay = rand()%2 + 1;
 					x = 3;
 
 					// Add 1 min to current obj.time due to delay;
-					string newtime = getHour(arr[index].time) + ":";
-					string min = getMin(arr[index].time);
-					int newmin = stoi(min)+1;
+					int newhour = stoi(getHour(arr[index].time));
+					int newmin = stoi(getMin(arr[index].time))+delay;
 
-					if (newmin%10==newmin){
-						newtime += "0";
-						newtime += to_string(newmin);
-					}else {
-						newtime += to_string(newmin);
-					}
+					string newtime = convertTime(newhour, newmin);
 
 					arr[index].time = newtime;
-					ontime.pop();
+
 				}
 				else{
 					x = 4;
-					ontime.pop();
-					ontime.push(index);
 				}
 			}
 			else if (arr[index].remarks == Remarks[3] ){
 				x = 4;
-				ontime.pop();
-	 			ontime.push(index);
 			}
 			else if (arr[index].remarks == Remarks[4] ){
 				x = 5;
-				ontime.pop();
-				ontime.push(index);
 			}
 			else if (arr[index].remarks == Remarks[5] ){
 				x = 6;
-				ontime.pop();
 			}
+			ontime.pop();
+			ontime.push(index);
+
 			arr[index].remarks = remarks(x);
 		}
 	}
 
-	// Fill up obj that has "" / empty data
-	for (int k = 0; k<empty.size();k++){
-		int x = empty.front();
+	// Avoid error if start time queue is empty
+	if (start.size() > 0){
+		r = rand() % start.size()+1;
 
-		arr[x].country=country();
-		arr[x].flight=flight();
-		arr[x].time=time();
-		arr[x].remarks=remarks(0);
+		for (int a = 0; a < r; a++){
+			int index = start.front();
+			if (arr[index].remarks == Remarks[0] ){
+				x = 1;
+			}
+			else if (arr[index].remarks == Remarks[1] ){
+				x = 2;
+			}
+			else if (arr[index].remarks == Remarks[2] ){
+				if (rand()%4 == 0){
+					int delay = rand()%2 + 1;
+					x = 3;
 
-		empty.pop();
+					// Add 1 min to current obj.time due to delay;
+					int newhour = stoi(getHour(arr[index].time));
+					int newmin = stoi(getMin(arr[index].time))+delay;
+
+					string newtime = convertTime(newhour, newmin);
+
+					arr[index].time = newtime;
+				}
+				else{
+					x = 4;
+				}
+			}
+			else if (arr[index].remarks == Remarks[3] ){
+				x = 4;
+			}
+			else {
+				x = 5;
+			}
+			start.pop();
+			start.push(index);
+
+			arr[index].remarks = remarks(x);
+		}
 	}
 
-	// Empty data of obj with "Departed" remark
-	for (int j = 0; j<dep.size();j++){
-		int x = dep.front();
+	fillEmpty();
 
-		arr[x].remarks = "";
-		arr[x].flight = "";
-		arr[x].time = "";
-		arr[x].country = "";
-
-		dep.pop();
-		empty.push(x);
-	}
+	emptyObj();
 }
 
 // Print the searched flight num
