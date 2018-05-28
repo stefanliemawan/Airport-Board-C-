@@ -72,18 +72,29 @@ string Flight::time() {
 	time_t theTime = std::time(NULL);
 	struct tm *aTime = localtime(&theTime);
 
-	int min;
 	int hour = aTime->tm_hour;
+	int min;
 
 	// Check second to avoid getting current minute after current minute increase due to sleep
-	if (aTime->tm_sec >= 30){
-		min = (aTime->tm_min)+(rand()%3)+1;
+	if (aTime->tm_sec >= 40){
+		min = (aTime->tm_min)+(rand()%3+1);
 	}else {
 		min = (aTime->tm_min)+(rand()%4);
 	}
 
-	clock += to_string(hour);
-	clock += ":";
+	if (min >= 60){
+		hour += 1;
+		min = min%60;
+	}
+
+	if (hour%10==hour){
+		clock += to_string(0);
+		clock += to_string(hour);
+		clock += ":";
+	}else {
+		clock += to_string(hour);
+		clock += ":";
+	}
 
 	if (min%10==min){
 		clock += to_string(0);
@@ -106,37 +117,19 @@ string Flight::currentTime(){
 	int hour = aTime->tm_hour;
 	int min = aTime->tm_min;
 
-	clock += to_string(hour);
-	clock += ":";
+	if (min >= 60){
+		hour += 1;
+		min = min%60;
+	}
 
-	if (min%10==min){
+	if (hour%10==hour){
 		clock += to_string(0);
-		clock += to_string(min);
+		clock += to_string(hour);
+		clock += ":";
 	}else {
-		clock += to_string(min);
+		clock += to_string(hour);
+		clock += ":";
 	}
-
-	return clock;
-}
-
-// Return the start time for checkData()
-string Flight::startTime(){
-
-	string clock;
-
-	time_t theTime = std::time(NULL);
-	struct tm *aTime = localtime(&theTime);
-
-	int hour = aTime->tm_hour;
-	int min = aTime->tm_min;
-	int sec = (aTime->tm_sec)+30;
-
-	if (sec >= 60){
-		min+=1;
-	}
-
-	clock += to_string(hour);
-	clock += ":";
 
 	if (min%10==min){
 		clock += to_string(0);
@@ -305,14 +298,9 @@ void Flight::update(){
 		}
 	}
 
-	// Avoid error if notime queue is empty
+	// Avoid error if ontime queue is empty
 	if (ontime.size() > 0){
 		r = rand() % ontime.size()+1;
-
-		// Increase speed of departing the on time plane to avoid being passed by current time
-		if (ontime.size() >= 2){
-			r+=1;
-		}
 
 		for (int a = 0; a < r; a++){
 			int index = ontime.front();
@@ -396,7 +384,8 @@ void Flight::update(){
 	}
 }
 
-void Flight::checkNum(string input){
+// Print the searched flight num
+int Flight::checkNum(string input){
 
 	for (int i=0;i<(sizeof(arr)/sizeof(*arr));i++){
 		if(arr[i].flight==input){
@@ -405,10 +394,10 @@ void Flight::checkNum(string input){
 			cout<<arr[i].time<<setw(15);
 			cout<<arr[i].remarks;
 			cout<<endl;
-			break;
-
+			return 0;
 		}
 	}
 
 	cout<< "Flight Number " << input <<" Not Found"<<endl;
+	return 1;
 }

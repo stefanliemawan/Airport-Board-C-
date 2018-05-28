@@ -34,7 +34,6 @@ class Flight {
 		string flight();
 		string country();
 		string time();
-		string startTime();
 		string currentTime();
 		void announcement();
 		void checkData();
@@ -44,7 +43,7 @@ class Flight {
 		string getHour(string time);
 		string getMin(string time);
 		void update();
-		void checkNum(string input);
+		int checkNum(string input);
 };
 
 #endif

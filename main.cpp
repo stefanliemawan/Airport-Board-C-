@@ -51,9 +51,7 @@ void menu1() {
 	cout<<"Press 2 to search for flight..."<<endl;
 	cout<<"Press 3 to see the announcement..."<<endl;
 
-	sleep(3);
-
-//	flight.update(); //cout << "update "<< endl;
+	sleep(1);
 
 	gotoxy(0,0);
 
@@ -77,7 +75,7 @@ void menu2() {
 void menu3() {
 	system("cls");
 	flight.announcement();
-	sleep(1);
+	sleep(3);
 	system("cls");
 	menu = 0;
 }
