@@ -9,22 +9,23 @@ using namespace std;
 
 class Flight {
 	public :
-		
+
 		Flight();
-		
+
 		struct node{
 			string flight;
 			string remarks;
 			string country;
 			string time;
 		};
+
 		node arr[20];
 		queue<int> dep;
 		queue<int> land;
 		queue<int> empty;
 		queue<int> ontime;
 		queue<int> delay;
-		
+
 		string Remarks[7] = {
 			"Landing","Refuel","On Schedule","Delayed","Boarding","Final Check","Departed"
 		};
@@ -33,9 +34,9 @@ class Flight {
 		string flight();
 		string country();
 		string time();
+		string startTime();
 		string currentTime();
 		void announcement();
-		void newData();
 		void checkData();
 		void clearQueue();
 		void declareData();
@@ -47,4 +48,3 @@ class Flight {
 };
 
 #endif
-

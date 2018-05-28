@@ -76,7 +76,7 @@ string Flight::time() {
 	int hour = aTime->tm_hour;
 
 	// Check second to avoid getting current minute after current minute increase due to sleep
-	if (aTime->tm_sec >= 50){
+	if (aTime->tm_sec >= 30){
 		min = (aTime->tm_min)+(rand()%3)+1;
 	}else {
 		min = (aTime->tm_min)+(rand()%4);
@@ -105,6 +105,7 @@ string Flight::currentTime(){
 
 	int hour = aTime->tm_hour;
 	int min = aTime->tm_min;
+
 	clock += to_string(hour);
 	clock += ":";
 
@@ -118,26 +119,33 @@ string Flight::currentTime(){
 	return clock;
 }
 
+// Return the start time for checkData()
+string Flight::startTime(){
 
-// Ini ngapain cuk
-void Flight::newData(){
-	int y;
-	while(!dep.empty()){
-		y=dep.front();
-		dep.pop();
+	string clock;
 
-		node obj;
-		obj.country=country();
-		obj.flight=flight();
-		obj.time=time();
-		obj.remarks=remarks(0);
+	time_t theTime = std::time(NULL);
+	struct tm *aTime = localtime(&theTime);
 
-		arr[y].country=obj.country;
-		arr[y].flight=obj.flight;
-		arr[y].remarks=obj.remarks;
-		arr[y].time=obj.time;
+	int hour = aTime->tm_hour;
+	int min = aTime->tm_min;
+	int sec = (aTime->tm_sec)+30;
 
+	if (sec >= 60){
+		min+=1;
 	}
+
+	clock += to_string(hour);
+	clock += ":";
+
+	if (min%10==min){
+		clock += to_string(0);
+		clock += to_string(min);
+	}else {
+		clock += to_string(min);
+	}
+
+	return clock;
 }
 
 // Announce the depart plane
@@ -173,7 +181,7 @@ void Flight::checkData(){
 
 		}else if(arr[i].remarks=="Landing"){
 			land.push(i);
-			
+
 		}else if(arr[i].remarks == "Delayed"){
 			delay.push(i);
 		}
@@ -186,7 +194,7 @@ void Flight::checkData(){
 			continue;
 		}
 	}
-	
+
 }
 
 // Clear up the dep, land and ontime queues
@@ -222,13 +230,13 @@ void Flight::declareData(){
 
 // Print all data in form of Board
 void Flight::printData(){
-	
+
 	cout<<"================================================================================"<<endl;
 	cout<<"||"<<setw(12)<<"Flight No."<<setw(6)<<"||"<<setw(10);
 		cout<<"Country"<<setw(8)<<"||"<<setw(8);
 		cout<<"Time"<<setw(10)<<"||"<<setw(15);
 		cout<<"Remarks"<<setw(9)<<"||";
-		cout<<endl;	
+		cout<<endl;
 	cout<<"================================================================================"<<endl;
 
 
@@ -266,7 +274,7 @@ string Flight::getMin(string time){
 }
 
 // Update the board >> logics applied here
-void Flight::update() {
+void Flight::update(){
 
 	int random;
 	int x;
@@ -283,7 +291,7 @@ void Flight::update() {
 			else if (arr[random].remarks == Remarks[1] ) x = 2;
 			else if (arr[random].remarks == Remarks[3] ) x = 3;
 			else {
-				
+
 				// Make remark the same or unchange
 				for (int a = 0; a < 7; a++){
 					if (arr[random].remarks == Remarks[a] ){
@@ -386,26 +394,21 @@ void Flight::update() {
 		dep.pop();
 		empty.push(x);
 	}
-
-	// Clear all queue to avoid stacking the indexes multiple time
-//	clearQueue();
 }
 
 void Flight::checkNum(string input){
-	
+
 	for (int i=0;i<(sizeof(arr)/sizeof(*arr));i++){
 		if(arr[i].flight==input){
 			cout<<arr[i].flight<<setw(9);
 			cout<<arr[i].country<<setw(9);
 			cout<<arr[i].time<<setw(15);
 			cout<<arr[i].remarks;
-			cout<<endl;	
-			break;	
-			
+			cout<<endl;
+			break;
+
 		}
 	}
-	
+
 	cout<< "Flight Number " << input <<" Not Found"<<endl;
 }
-
-
