@@ -34,20 +34,28 @@ void input() {
 				menu = 2;
 				break;
 			case 'x' :
-				run = false;
+				system("cls");
+				exit(0);
 				break;
 		}
 	}
 }
 
 void menu1() {
+
 	flight.clearQueue();
+	
 	flight.printData(); //cout << //"print ";
 	flight.checkData(); //cout << //"check ";
 
 	cout<<"Press 2 to search for flight..."<<endl;
 	cout<<"Press 3 to see the announcement..."<<endl;
-	flight.update(); //cout << "update "<< endl;
+	
+	sleep(3);
+
+//	flight.update(); //cout << "update "<< endl;
+	
+	
 
 	gotoxy(0,0);
 
@@ -60,8 +68,10 @@ void menu2() {
 	cout<<"Flight Number : ";
 	getline (std::cin,flightnum);
 	flight.checkNum(flightnum);
+	
 
 	cout<<"press 1 to exit search"<<endl;
+	sleep(3);
 	system("cls");
 
 }
@@ -69,7 +79,9 @@ void menu2() {
 void menu3() {
 	system("cls");
 	flight.announcement();
+	sleep(3);
 	system("cls");
+	menu = 0;
 }
 
 int main() {
@@ -87,6 +99,9 @@ int main() {
 			menu3();
 		}
 		input();
+		if (menu != 2){
+			flight.update(); //cout << "update "<< endl;
+		}
 	}
 
 	cin.ignore();

@@ -6,6 +6,8 @@
 
 using namespace std;
 
+//updated LongLong 15:04
+
 Flight::Flight(){};
 
 // Produce random remark
@@ -397,7 +399,8 @@ void Flight::checkNum(string input){
 			cout<<arr[i].country<<setw(9);
 			cout<<arr[i].time<<setw(15);
 			cout<<arr[i].remarks;
-			cout<<endl;		
+			cout<<endl;	
+			break;	
 			
 		}
 	}
