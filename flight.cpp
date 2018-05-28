@@ -391,7 +391,7 @@ void Flight::update() {
 //	clearQueue();
 }
 
-void Flight::checkNum(string input){
+int Flight::checkNum(string input){
 	
 	for (int i=0;i<(sizeof(arr)/sizeof(*arr));i++){
 		if(arr[i].flight==input){
@@ -400,12 +400,13 @@ void Flight::checkNum(string input){
 			cout<<arr[i].time<<setw(15);
 			cout<<arr[i].remarks;
 			cout<<endl;	
-			break;	
-			
+				
+			return 0;
 		}
 	}
-	
-	cout<< "Flight Number " << input <<" Not Found"<<endl;
+		cout<< "Flight Number " << input <<" Not Found"<<endl;
+		return 1;
+
 }
 
 
