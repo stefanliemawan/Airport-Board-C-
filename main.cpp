@@ -71,10 +71,9 @@ void menu2() {
 void menu3() {
 	system("cls");
 	flight.announcement();
-//	flight.clearQueue();
 	sleep(3);
 	system("cls");
-//	menu = 0;
+
 }
 
 int main() {

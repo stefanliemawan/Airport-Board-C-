@@ -4,11 +4,12 @@
 #include <iostream>
 #include <string>
 #include <queue>
+#include "Time.h"
 
 using namespace std;
 
 class Flight {
-	public :
+	public:
 
 		Flight();
 
@@ -16,11 +17,10 @@ class Flight {
 			string flight;
 			string remarks;
 			string country;
-			string time;
+			Time time;
 		};
 
 		node arr[20];
-		int timer;
 		queue<int> dep;
 		queue<int> land;
 		queue<int> delay;
@@ -36,21 +36,15 @@ class Flight {
 		string remarks(int index);
 		string flight();
 		string country();
-		string time();
-		string currentTime();
-		string startTime();
+		void randomiseQueue(queue<int> q);
 		void announcement();
 		void checkData();
 		void clearQueue();
 		void declareData();
 		void printData();
-		string convertTime(int hour, int min);
-		string getHour(string time);
-		string getMin(string time);
 		void fillEmpty();
 		void emptyObj();
 		void update();
-		int getSecond();
 		int checkNum(string input);
 };
 
