@@ -64,17 +64,6 @@ string Flight::country() {
 	return country;
 }
 
-// Randomise Queue
-void Flight::randomiseQueue(queue<int> q) {
-	int r = rand() % q.size();
-
-	for (int i = 0; i < r; i++){
-		int x = q.front();
-		q.pop();
-		q.push(x);
-	}
-}
-
 // Announce the depart plane
 void Flight::announcement(){
 	cout<<"============"<<endl;
@@ -98,8 +87,6 @@ void Flight::announcement(){
 	}
 
 	cout<<"press 1 to return to notice board"<<endl;
-
-
 }
 
 // Fill up the dep, land and ontime queue
@@ -133,7 +120,6 @@ void Flight::checkData(){
 			continue;
 		}
 	}
-
 }
 
 // Clear up the dep, land and ontime queues
@@ -266,7 +252,6 @@ void Flight::update(){
 	// Avoid error if ontime queue is empty
 	if (ontime.size() > 0){
 		r = rand() % ontime.size()+1;
-		randomiseQueue(ontime);
 
 		if (ontime.size() > 2 & r <= ontime.size()/2){
 			r += 1;
@@ -310,7 +295,6 @@ void Flight::update(){
 	// Avoid error if start time queue is empty
 	if (start.size() > 0){
 		r = rand() % start.size()+1;
-		randomiseQueue(start);
 
 		if (start.size() > 2 & r <= start.size()/2){
 			r += 1;

@@ -30,13 +30,13 @@ class Flight {
 		queue<int> ontime;
 
 		string Remarks[7] = {
-			"Landing","Refuel","On Schedule","Delayed","Boarding","Final Check","Departed"
+			"Landing","Refuel","On Schedule","Delayed",
+			"Boarding","Final Check","Departed"
 		};
 
 		string remarks(int index);
 		string flight();
 		string country();
-		void randomiseQueue(queue<int> q);
 		void announcement();
 		void checkData();
 		void clearQueue();

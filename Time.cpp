@@ -32,7 +32,8 @@ void Time::maketime() {
 	int hour = aTime->tm_hour;
 	int min;
 
-	// Check second to avoid getting current minute after current minute increase due to sleep
+	/* Check second to avoid getting current minute 
+  after current minute increase due to sleep*/
 	if (aTime->tm_sec >= 46){
 		min = (aTime->tm_min)+(rand()%3+1);
 	}else {
